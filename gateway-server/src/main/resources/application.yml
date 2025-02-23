@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: "gateway-server"
+
+  cloud:
+    gateway:
+        routes: # listeler - ile g�sterilir, #uri degil servis verilmeli cunku load balancing yapilacak olursa birden fazla port olabilir takip edilemez. Servis discovery kullan?l?r.
+          - id: "order-service"
+            uri: "lb://order-service" #eurekadaki isim verilir, lb load balancing anlamına gelir, otomatik yapar.
+            predicates: # ko?ullu y�nlendirmeyi sa?lar
+              - "Path=/api/v1/orders/**"
+          - id: "customer-service"
+            uri: "lb://customer-service"
+            predicates:
+              - "Path=/api/v1/customers/**"
+          - id: "cart-service"
+            uri: "lb://cart-service"
+            predicates:
+              - "Path=/api/v1/cart/**"
+
+          - id: "product-service"
+            uri: "lb://product-service"
+            predicates:
+              - "Path=/api/v1/products/**"
+
+          - id: "notification-service"
+            uri: "lb://notification-service"
+            predicates:
+              - "Path=/api/v1/notifications/**"
+
+          - id: "identity-service"
+            uri: "lb://identity-service"
+            predicates:
+              - "Path=/api/v1/identities/**"
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    service-url:
+      defaultZone: "http://localhost:8888/eureka/"
+    register-with-eureka: true #kayıt eder
+    fetch-registry: true #kayıtlıları alır
+
+#ctrl + shift + f ile port: arat?p bo? olanlar? bulabiliriz

@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: "identity-service"
+
+  datasource:
+    url: "jdbc:postgresql://localhost:5434/identity-service"
+    username: postgres
+    password: test
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    showSql: true
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 8084
+
+eureka:
+  instance:
+    hostname: "localhost"
+  client:
+    service-url:
+      defaultZone: "http://localhost:8888/eureka/"
+    register-with-eureka: true # kendini kaydetmeyi önler
+    fetch-registry: true #kayıtlılardan kendisini almaz

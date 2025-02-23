@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: "order-service"
+
+  cloud:
+    stream:
+      defaultBinder: kafka
+      function :
+        definititon: orderCreatedFunction # Kullanılacak fonksiyonun adını belirtir. Bu örnekte "orderCreatedFunction" adında bir fonksiyon tanımlanmış.
+      bindings: # Binding'ler, fonksiyonların hangi Kafka topic'leri ile ilişkili olduğunu tanımlar.
+        orderCreatedFunction-out-0: # "orderCreatedFunction" fonksiyonunun "out-0" output'u.  Spring Cloud Stream'de fonksiyonların birden fazla input ve output'u olabilir. Bu, ilk output olduğunu gösterir.
+          destination: order-topic # Mesajların gönderileceği Kafka topic'inin adını belirtir. Bu örnekte "order-topic" adlı bir topic'e mesajlar gönderilecektir.
+          content-type: application/json # Gönderilen mesajların içeriğinin JSON formatında olduğunu belirtir. Bu, mesajların serileştirme veDeserialization işlemleri için önemlidir.
+      kafka:
+        binder:
+          brokers: localhost:9092  # Kafka broker'larının adresini belirtir.
+
+  datasource:
+    url: "jdbc:postgresql://localhost:5433/order-service"
+    username: postgres
+    password: test
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    showSql: true
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 8081
+
+eureka:
+  client:
+    service-url:
+      defaultZone: "http://localhost:8888/eureka/"
+    register-with-eureka: true #kayıt eder
+    fetch-registry: true #kayıtlıları alır

@@ -1,0 +1,16 @@
+spring:
+  application:
+   name: "discovery-service"
+
+server:
+  port: 8888
+
+eureka:
+  instance:
+    hostname: "localhost"
+  client:
+    service-url:
+      defaultZone: "http://localhost:8888/eureka/"
+    register-with-eureka: false # kendini kaydetmeyi önler
+    fetch-registry: false #kay?tl?lardan kendisini almaz
+

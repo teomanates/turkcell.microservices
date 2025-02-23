@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: "notification-service"
+
+server:
+  port: 8085
+
+eureka:
+  instance:
+    hostname: "localhost"
+  client:
+    service-url:
+      defaultZone: "http://localhost:8888/eureka/"
+    register-with-eureka: true # kendini kaydetmeyi önler
+    fetch-registry: true #kayıtlılardan kendisini almaz

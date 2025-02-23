@@ -1,0 +1,93 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.github.teomanates</groupId>
+    <artifactId>common</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+
+    <name>common</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- Bu build bölümü, projenizin Maven Central Repository'ye yayınlanması için gerekli olan yapılandırmaları içerir -->
+    <build>
+        <plugins>
+            <!-- Bu plugin, projenizi Maven Central'e yayınlamak istediğinizde kullanılır -->
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.6.0</version>
+                <configuration>
+                    <publishingServerId>central
+                    </publishingServerId> <!-- Bu ayar, Maven ayarlarınızda (settings.xml) tanımladığınız Maven Central sunucusunun ID'sini belirtir. -->
+                </configuration>
+            </plugin>
+
+            <!--Bu plugin, projenizin artifact'lerini GPG (GNU Privacy Guard) ile imzalamanızı sağlar. projenizi Maven Central'e yayınlamadan önce artifact'lerinizi imzalamanız gerektiğinde kullanılır-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify
+                        </phase> <!--  hangi Maven yaşam döngüsü aşamasında çalışacağını belirtir. verify aşaması, testlerin başarılı bir şekilde tamamlanmasından sonra gerçekleşir. -->
+                        <goals>
+                            <goal>sign
+                            </goal> <!-- Plugin'in hangi görevi yerine getireceğini belirtir. sign görevi, artifact'leri imzalar. -->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--projenizin kaynak kodlarını içeren bir JAR dosyası oluşturmanızı sağlar. Bu, kullanıcıların artifact'lerinizi kullanırken kaynak kodlarına da erişebilmelerini sağlar.-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar
+                            </goal> <!--  hangi görevi yerine getireceğini belirtir. jar görevi, kaynak kodlarını içeren bir JAR dosyası oluşturur. -->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--Javadoc belgelerini içeren bir JAR dosyası oluşturmanızı sağlar. Bu, kullanıcıların artifact'lerinizi kullanırken API belgelerine de erişebilmelerini sağlar.-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
