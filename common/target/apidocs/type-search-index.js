@@ -1,1 +1,1 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"io.github.teomanates","l":"Main"}];updateSearchResults();
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"io.github.teomanates","l":"Main"},{"p":"io.github.teomanates.event.order","l":"OrderCreatedEvent"}];updateSearchResults();

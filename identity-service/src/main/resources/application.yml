@@ -3,7 +3,7 @@ spring:
     name: "identity-service"
 
   datasource:
-    url: "jdbc:postgresql://localhost:5434/identity-service"
+    url: "jdbc:postgresql://localhost:5436/identity-service"
     username: postgres
     password: test
 

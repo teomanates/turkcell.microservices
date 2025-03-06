@@ -16,7 +16,7 @@ spring:
           brokers: localhost:9092  # Kafka broker'larının adresini belirtir.
 
   datasource:
-    url: "jdbc:postgresql://localhost:5433/order-service"
+    url: "jdbc:postgresql://localhost:5435/order-service"
     username: postgres
     password: test
 

@@ -4,10 +4,10 @@ spring:
 
   cloud:
     gateway:
-        routes: # listeler - ile g�sterilir, #uri degil servis verilmeli cunku load balancing yapilacak olursa birden fazla port olabilir takip edilemez. Servis discovery kullan?l?r.
+        routes: # listeler - ile gösterilir, #uri degil servis verilmeli cunku load balancing yapilacak olursa birden fazla port olabilir takip edilemez. Servis discovery kullanılır.
           - id: "order-service"
             uri: "lb://order-service" #eurekadaki isim verilir, lb load balancing anlamına gelir, otomatik yapar.
-            predicates: # ko?ullu y�nlendirmeyi sa?lar
+            predicates: # koşullu yönlendirmeyi sağlar
               - "Path=/api/v1/orders/**"
           - id: "customer-service"
             uri: "lb://customer-service"
@@ -37,10 +37,12 @@ server:
   port: 8080
 
 eureka:
+  instance:
+    hostname: "gateway-server"
   client:
     service-url:
-      defaultZone: "http://localhost:8888/eureka/"
+      defaultZone: "http://discovery-service:8888/eureka/"
     register-with-eureka: true #kayıt eder
     fetch-registry: true #kayıtlıları alır
 
-#ctrl + shift + f ile port: arat?p bo? olanlar? bulabiliriz
+#ctrl + shift + f ile port: aratıp boş olanları bulabiliriz

@@ -5,18 +5,47 @@
 
     <groupId>io.github.teomanates</groupId>
     <artifactId>common</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.1</version> <!-- Büyük değişiklikler(yeni özellik: örneğin tüm pakete lombok desteği, elasticsearch ekleme) en baştaki, minimal(class ekleme) en sağdaki -->
     <packaging>jar</packaging>
 
 
     <name>common</name>
     <url>http://maven.apache.org</url>
+    <description>Turkcell Java 2. Dönem Microservices Projesi Common Paketi</description>
+    <developers>
+        <developer>
+            <id>teomanates</id>
+            <name>Teoman Ateş</name>
+            <email>teomanates@gmail.com</email>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
     </properties>
+
+    <scm>
+        <url>https://github.com/teomanates/turkcell.microservices</url>
+        <connection>scm:git:git://github.com/teomanates/turkcell.microservices</connection>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -35,9 +64,9 @@
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
                 <version>0.6.0</version>
+                <extensions>true</extensions>
                 <configuration>
-                    <publishingServerId>central
-                    </publishingServerId> <!-- Bu ayar, Maven ayarlarınızda (settings.xml) tanımladığınız Maven Central sunucusunun ID'sini belirtir. -->
+                    <publishingServerId>ossrh</publishingServerId> <!-- Bu ayar, Maven ayarlarınızda (settings.xml) tanımladığınız Maven Central sunucusunun ID'sini belirtir. -->
                 </configuration>
             </plugin>
 
@@ -67,8 +96,7 @@
                 <executions>
                     <execution>
                         <goals>
-                            <goal>jar
-                            </goal> <!--  hangi görevi yerine getireceğini belirtir. jar görevi, kaynak kodlarını içeren bir JAR dosyası oluşturur. -->
+                            <goal>jar</goal> <!--  hangi görevi yerine getireceğini belirtir. jar görevi, kaynak kodlarını içeren bir JAR dosyası oluşturur. -->
                         </goals>
                     </execution>
                 </executions>

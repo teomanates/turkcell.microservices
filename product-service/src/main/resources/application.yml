@@ -4,7 +4,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://admin:test@localhost:27018/product-service?authSource=admin
+      uri: mongodb://admin:test@localhost:27019/product-service?authSource=admin
 
 server:
   port: 8083

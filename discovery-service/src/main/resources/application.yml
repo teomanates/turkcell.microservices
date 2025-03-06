@@ -1,16 +1,15 @@
 spring:
   application:
-   name: "discovery-service"
+    name: "discovery-service"
 
 server:
   port: 8888
 
 eureka:
   instance:
-    hostname: "localhost"
+    hostname: "discovery-service"
   client:
     service-url:
-      defaultZone: "http://localhost:8888/eureka/"
-    register-with-eureka: false # kendini kaydetmeyi önler
-    fetch-registry: false #kay?tl?lardan kendisini almaz
-
+      defaultZone: "http://discovery-service:8888/eureka/"
+    register-with-eureka: false
+    fetch-registry: false

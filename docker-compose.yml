@@ -1,7 +1,8 @@
 services:
-  pg-1:
-    image: postgres
-    container_name: "pg-1"
+  # PostgreSQL Servisleri
+  postgres_5435:
+    image: postgres:latest
+    container_name: "postgres_5435"
     ports:
       - "5435:5432"
     environment:
@@ -9,10 +10,11 @@ services:
       - POSTGRES_PASSWORD=test
       - POSTGRES_DB=postgres
     volumes:
-      - pg1_data:/var/lib/postgresql/data
-  pg-2:
-    image: postgres
-    container_name: "pg-2"
+      - postgres_5435_data:/var/lib/postgresql/data
+
+  postgres_5436:
+    image: postgres:latest
+    container_name: "postgres_5436"
     ports:
       - "5436:5432"
     environment:
@@ -20,7 +22,46 @@ services:
       - POSTGRES_PASSWORD=test
       - POSTGRES_DB=postgres
     volumes:
-      - pg2_data:/var/lib/postgresql/data
+      - postgres_5436_data:/var/lib/postgresql/data
+
+  # MySQL Servisi
+  mysql_3308:
+    image: mysql:latest
+    container_name: "mysql_3308"
+    ports:
+      - "3308:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=test
+      - MYSQL_DATABASE=customer-service
+    volumes:
+      - mysql_3308_data:/var/lib/mysql
+
+  # MongoDB Servisleri
+  mongodb_27020:
+    image: mongo
+    container_name: "mongo_27020"
+    ports:
+      - "27020:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=test
+    volumes:
+      - mongodb_27020_data:/data/db
+    command: mongod --auth
+
+  mongodb_27019:
+    image: mongo
+    container_name: "mongo_27019"
+    ports:
+      - "27019:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=test
+    volumes:
+      - mongodb_27019_data:/data/db
+    command: mongod --auth
+
+  # Kafka
   kafka:
     image: bitnami/kafka
     ports:
@@ -40,6 +81,115 @@ services:
       - BITNAMI_DEBUG=yes
       - KAFKA_CFG_NUM_PARTITIONS=2
 
+  # Microservices
+  discovery-service:
+    build: ./discovery-service
+    image: turkcell-discovery-service
+    container_name: discovery_service
+    ports:
+      - "8888:8888"
+
+  gateway-server:
+    build: ./gateway-server
+    image: turkcell-gateway-server
+    container_name: gateway_server
+    ports:
+      - "8080:8080"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8888/eureka/
+      - EUREKA_INSTANCE_PREFERIPADDRESS=true
+    depends_on:
+      - discovery-service
+
+  order-service:
+    build: ./order-service
+    image: turkcell-order-service
+    container_name: order_service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres_5435:5432/order-service"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
+      EUREKA_INSTANCE_PREFERIPADDRESS: true
+    depends_on:
+      - postgres_5435
+      - discovery-service
+      - kafka
+
+  cart-service:
+    build: ./cart-service
+    image: turkcell-cart-service
+    container_name: cart_service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATA_MONGODB_URI: "mongodb://admin:test@mongodb_27020:27017/cart-service?authSource=admin"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
+      EUREKA_INSTANCE_PREFERIPADDRESS: true
+    depends_on:
+      - mongodb_27020
+      - discovery-service
+      - kafka
+
+  product-service:
+    build: ./product-service
+    image: turkcell-product-service
+    container_name: product_service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATA_MONGODB_URI: "mongodb://admin:test@mongodb_27019:27017/product-service?authSource=admin"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
+      EUREKA_INSTANCE_PREFERIPADDRESS: true
+    depends_on:
+      - mongodb_27019
+      - discovery-service
+
+  identity-service:
+    build: ./identity-service
+    image: turkcell-identity-service
+    container_name: identity_service
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres_5436:5432/identity-service"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
+      EUREKA_INSTANCE_PREFERIPADDRESS: true
+    depends_on:
+      - postgres_5436
+      - discovery-service
+
+  notification-service:
+    build: ./notification-service
+    image: turkcell-notification-service
+    container_name: notification_service
+    ports:
+      - "8085:8085"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
+      EUREKA_INSTANCE_PREFERIPADDRESS: true
+    depends_on:
+      - discovery-service
+
+  customer-service:
+    build: ./customer-service
+    image: turkcell-customer-service
+    container_name: customer_service
+    ports:
+      - "8086:8086"
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql_3308:3306/customer-service?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Europe/Istanbul"
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: test
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
+      EUREKA_INSTANCE_PREFERIPADDRESS: true
+    depends_on:
+      - mysql_3308
+      - discovery-service
+
 volumes:
-  pg1_data:
-  pg2_data:
+  postgres_5435_data:
+  postgres_5436_data:
+  mysql_3308_data:
+  mongodb_27019_data:
+  mongodb_27020_data:
