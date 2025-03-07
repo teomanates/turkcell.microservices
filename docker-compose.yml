@@ -8,7 +8,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=test
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB=order-service
     volumes:
       - postgres_5435_data:/var/lib/postgresql/data
 
@@ -20,7 +20,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=test
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB=identity-service
     volumes:
       - postgres_5436_data:/var/lib/postgresql/data
 
@@ -55,7 +55,7 @@ services:
     ports:
       - "27019:27017"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_USERNAME=admin #docker hubdan bulabiliriz
       - MONGO_INITDB_ROOT_PASSWORD=test
     volumes:
       - mongodb_27019_data:/data/db
@@ -70,11 +70,11 @@ services:
       - KAFKA_ENABLE_KRAFT=yes
       - KAFKA_CFG_PROCESS_ROLES=broker,controller
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092,EXTERNAL://localhost:9094
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
       - KAFKA_BROKER_ID=1
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@127.0.0.1:9093
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
       - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_CFG_NODE_ID=1
       - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
@@ -111,6 +111,8 @@ services:
       SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres_5435:5432/order-service"
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
       EUREKA_INSTANCE_PREFERIPADDRESS: true
+      SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       - postgres_5435
       - discovery-service
@@ -119,17 +121,19 @@ services:
   cart-service:
     build: ./cart-service
     image: turkcell-cart-service
-    container_name: cart_service
+    container_name: cart-service
     ports:
       - "8082:8082"
     environment:
       SPRING_DATA_MONGODB_URI: "mongodb://admin:test@mongodb_27020:27017/cart-service?authSource=admin"
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
       EUREKA_INSTANCE_PREFERIPADDRESS: true
+      SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       - mongodb_27020
-      - discovery-service
       - kafka
+      - discovery-service
 
   product-service:
     build: ./product-service

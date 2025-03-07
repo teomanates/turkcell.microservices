@@ -5,16 +5,15 @@ spring:
   cloud:
     stream:
       defaultBinder: kafka
-      function :
-        definititon: orderCreatedFunction # Kullanılacak fonksiyonun adını belirtir. Bu örnekte "orderCreatedFunction" adında bir fonksiyon tanımlanmış.
-      bindings: # Binding'ler, fonksiyonların hangi Kafka topic'leri ile ilişkili olduğunu tanımlar.
-        orderCreatedFunction-in-0: # "orderCreatedFunction" fonksiyonunun "out-0" output'u.  Spring Cloud Stream'de fonksiyonların birden fazla input ve output'u olabilir. Bu, ilk output olduğunu gösterir.
-          destination: order-topic # Mesajların gönderileceği Kafka topic'inin adını belirtir. Bu örnekte "order-topic" adlı bir topic'e mesajlar gönderilecektir.
-          content-type: application/json # Gönderilen mesajların içeriğinin JSON formatında olduğunu belirtir. Bu, mesajların serileştirme veDeserialization işlemleri için önemlidir.
-          group: cart-group
+      function:
+        definition: orderCreatedFunction
+      bindings:
+        orderCreatedFunction-in-0:
+          destination: order-topic
+          content-type: application/json
       kafka:
         binder:
-          brokers: localhost:9092  # Kafka broker'larının adresini belirtir.
+          brokers: localhost:9092
 
   data:
     mongodb:
@@ -27,6 +26,8 @@ eureka:
   client:
     service-url:
       defaultZone: "http://localhost:8888/eureka/"
-    register-with-eureka: true #kayıt eder
-    fetch-registry: true #kayıtlıları alır
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
 
