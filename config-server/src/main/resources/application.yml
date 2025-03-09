@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: "config-server"
+
+  cloud:
+    config:
+      server:
+        git:
+          uri:  "https://github.com/teomanates/turkcell.microservice-configs" #github config linki
+                #file://D:\masaustu\turkcell_java\projeler\crm.microservices-config
+          default-label: master
+
+server:
+  port: 8079
+
+#actuator dependency laz?m.
+management: #Uygulamam?z?n sa?l?k durumunu kontrol etmek için /actuator/health endpointini web üzerinden eri?ilebilir hale getirir.
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+

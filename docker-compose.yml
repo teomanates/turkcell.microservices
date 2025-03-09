@@ -101,6 +101,19 @@ services:
     depends_on:
       - discovery-service
 
+  config-server:
+    build: ./config-server
+    image: turkcell-config-server
+    container_name: config_server
+    ports:
+      - "8079:8079"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8079/actuator/health"] #bizim yerimize otomatize spring uygulaması healt check yapmış olur.
+      interval: 10s #kaç saniyede bi çalışsın
+      retries: 5 #kaç tekrar
+      start_period: 10s #ilk healthcheck ne zaman atılsın
+      timeout: 5s #cevap verilemzse başarısız sayılacak süredir.
+
   order-service:
     build: ./order-service
     image: turkcell-order-service
@@ -108,15 +121,25 @@ services:
     ports:
       - "8081:8081"
     environment:
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres_5435:5432/order-service"
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
-      EUREKA_INSTANCE_PREFERIPADDRESS: true
-      SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_CLOUD_CONFIG_PROFILE: "dev" #tek tek ezme işlemi yerine profil değiştik.
+      CONFIGURL: "http://config-server:8079"
+      #buradaki ezme işlemlerine gerek kalmaması için config dosyası ortamını vermemiz yeterli olacaktır.
+      #SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres_5435:5432/order-service"
+      #EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
+      #EUREKA_INSTANCE_PREFERIPADDRESS: true
+      #SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
+      #SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    restart: always #hata alınca tekrar çalıştırır.
     depends_on:
-      - postgres_5435
-      - discovery-service
-      - kafka
+      config-server:
+       condition: service_healthy
+      postgres_5435:
+        condition: service_started
+      discovery-service:
+        condition: service_started
+      kafka:
+        condition: service_started
+
 
   cart-service:
     build: ./cart-service
@@ -125,7 +148,7 @@ services:
     ports:
       - "8082:8082"
     environment:
-      SPRING_DATA_MONGODB_URI: "mongodb://admin:test@mongodb_27020:27017/cart-service?authSource=admin"
+      SPRING_DATA_MONGODB_URI: "mongodb://admin:test@mongo_27020:27017/cart-service?authSource=admin"
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
       EUREKA_INSTANCE_PREFERIPADDRESS: true
       SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
@@ -142,7 +165,7 @@ services:
     ports:
       - "8083:8083"
     environment:
-      SPRING_DATA_MONGODB_URI: "mongodb://admin:test@mongodb_27019:27017/product-service?authSource=admin"
+      SPRING_DATA_MONGODB_URI: "mongodb://admin:test@mongo_27019:27017/product-service?authSource=admin"
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
       EUREKA_INSTANCE_PREFERIPADDRESS: true
     depends_on:
