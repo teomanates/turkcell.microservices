@@ -1,24 +1,10 @@
+configurl: http://localhost:8079
+
 spring:
   application:
     name: "customer-service"
-
-  datasource:
-    url: "jdbc:mysql://localhost:3308/customer-service?allowPublicKeyRetrieval=true&useSSl=false&serverTimezone=Europe/Istanbul"
-    username: root
-    password: test
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    database-platform: org.hibernate.dialect.MySQL8Dialect
-
-server:
-  port: 8086
-
-eureka:
-  client:
-    service-url:
-      defaultZone: "http://localhost:8888/eureka/"
-    register-with-eureka: true #kayıt eder
-    fetch-registry: true #kayıtlıları alır
+  cloud:
+    config:
+      profile: local
+  config:
+    import: configserver:${configurl}

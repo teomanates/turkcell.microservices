@@ -88,6 +88,9 @@ services:
     container_name: discovery_service
     ports:
       - "8888:8888"
+    environment:
+      - SPRING_CLOUD_CONFIG_PROFILE: "dev" #tek tek ezme işlemi yerine profil değiştik.
+      - CONFIGURL: "http://config-server:8079"
 
   gateway-server:
     build: ./gateway-server
@@ -96,8 +99,10 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8888/eureka/
-      - EUREKA_INSTANCE_PREFERIPADDRESS=true
+      - SPRING_CLOUD_CONFIG_PROFILE: "dev" #tek tek ezme işlemi yerine profil değiştik.
+      - CONFIGURL: "http://config-server:8079"
+      #- EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8888/eureka/
+      #- EUREKA_INSTANCE_PREFERIPADDRESS=true
     depends_on:
       - discovery-service
 
@@ -121,8 +126,8 @@ services:
     ports:
       - "8081:8081"
     environment:
-      SPRING_CLOUD_CONFIG_PROFILE: "dev" #tek tek ezme işlemi yerine profil değiştik.
-      CONFIGURL: "http://config-server:8079"
+      - SPRING_CLOUD_CONFIG_PROFILE: "dev" #tek tek ezme işlemi yerine profil değiştik.
+      - CONFIGURL: "http://config-server:8079"
       #buradaki ezme işlemlerine gerek kalmaması için config dosyası ortamını vermemiz yeterli olacaktır.
       #SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres_5435:5432/order-service"
       #EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
@@ -148,15 +153,21 @@ services:
     ports:
       - "8082:8082"
     environment:
-      SPRING_DATA_MONGODB_URI: "mongodb://admin:test@mongo_27020:27017/cart-service?authSource=admin"
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
-      EUREKA_INSTANCE_PREFERIPADDRESS: true
-      SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      - SPRING_CLOUD_CONFIG_PROFILE: "dev"
+      - CONFIGURL: "http://config-server:8079"
+      #SPRING_DATA_MONGODB_URI: "mongodb://admin:test@mongo_27020:27017/cart-service?authSource=admin"
+      #EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
+      #EUREKA_INSTANCE_PREFERIPADDRESS: true
+      #SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
+      #SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    restart: always
     depends_on:
-      - mongodb_27020
-      - kafka
-      - discovery-service
+      mongodb_27020:
+        condition: service_started
+      kafka:
+        condition: service_started
+      discovery-service:
+        condition: service_started
 
   product-service:
     build: ./product-service
@@ -165,9 +176,11 @@ services:
     ports:
       - "8083:8083"
     environment:
-      SPRING_DATA_MONGODB_URI: "mongodb://admin:test@mongo_27019:27017/product-service?authSource=admin"
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
-      EUREKA_INSTANCE_PREFERIPADDRESS: true
+      - SPRING_CLOUD_CONFIG_PROFILE: "dev" #tek tek ezme işlemi yerine profil değiştik.
+      - CONFIGURL: "http://config-server:8079"
+      #SPRING_DATA_MONGODB_URI: "mongodb://admin:test@mongo_27019:27017/product-service?authSource=admin"
+      #EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
+      #EUREKA_INSTANCE_PREFERIPADDRESS: true
     depends_on:
       - mongodb_27019
       - discovery-service
@@ -179,9 +192,11 @@ services:
     ports:
       - "8084:8084"
     environment:
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres_5436:5432/identity-service"
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
-      EUREKA_INSTANCE_PREFERIPADDRESS: true
+      - SPRING_CLOUD_CONFIG_PROFILE: "dev" #tek tek ezme işlemi yerine profil değiştik.
+      - CONFIGURL: "http://config-server:8079"
+      #SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres_5436:5432/identity-service"
+      #EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
+      #EUREKA_INSTANCE_PREFERIPADDRESS: true
     depends_on:
       - postgres_5436
       - discovery-service
@@ -193,8 +208,10 @@ services:
     ports:
       - "8085:8085"
     environment:
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
-      EUREKA_INSTANCE_PREFERIPADDRESS: true
+      - SPRING_CLOUD_CONFIG_PROFILE: "dev" #tek tek ezme işlemi yerine profil değiştik.
+      - CONFIGURL: "http://config-server:8079"
+      #EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
+      #EUREKA_INSTANCE_PREFERIPADDRESS: true
     depends_on:
       - discovery-service
 
@@ -205,11 +222,13 @@ services:
     ports:
       - "8086:8086"
     environment:
-      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql_3308:3306/customer-service?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Europe/Istanbul"
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: test
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
-      EUREKA_INSTANCE_PREFERIPADDRESS: true
+      - SPRING_CLOUD_CONFIG_PROFILE: "dev" #tek tek ezme işlemi yerine profil değiştik.
+      - CONFIGURL: "http://config-server:8079"
+      #SPRING_DATASOURCE_URL: "jdbc:mysql://mysql_3308:3306/customer-service?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Europe/Istanbul"
+      #SPRING_DATASOURCE_USERNAME: root
+      #SPRING_DATASOURCE_PASSWORD: test
+      #EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8888/eureka/
+      #EUREKA_INSTANCE_PREFERIPADDRESS: true
     depends_on:
       - mysql_3308
       - discovery-service

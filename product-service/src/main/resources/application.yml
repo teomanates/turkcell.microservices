@@ -1,19 +1,10 @@
+configurl: http://localhost:8079
+
 spring:
   application:
-    name: "product-service"
-
-  data:
-    mongodb:
-      uri: mongodb://admin:test@localhost:27019/product-service?authSource=admin
-
-server:
-  port: 8083
-
-eureka:
-  instance:
-    hostname: "localhost"
-  client:
-    service-url:
-      defaultZone: "http://localhost:8888/eureka/"
-    register-with-eureka: true # kendini kaydetmeyi önler
-    fetch-registry: true #kayıtlılardan kendisini almaz
+    name: "identity-service"
+  cloud:
+    config:
+      profile: local
+  config:
+    import: configserver:${configurl}
